@@ -1,0 +1,162 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Minimal look: no colored backgrounds, arrows or icons
+format = "$username$hostname$directory$git_branch$git_state$git_status$python$cmd_duration$line_break$character"
+add_newline = true
+command_timeout = 500
+palette = "gruvbox_material"
+
+[username]
+show_always = true
+format = "[$user]($style)[@](grey)"
+style_user = "yellow"
+style_root = "bold red"
+
+[hostname]
+ssh_only = false
+format = "[$hostname]($style) "
+style = "orange"
+
+[directory]
+style = "bold blue"
+truncation_length = 3
+truncation_symbol = "…/"
+truncate_to_repo = true
+read_only = " ro"
+format = "[$path]($style)[$read_only]($read_only_style) "
+
+[git_branch]
+symbol = ""
+style = "fg"
+format = "[$branch]($style)"
+
+[git_state]
+style = "grey"
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+
+[git_status]
+style = "aqua"
+format = "([$all_status$ahead_behind]($style)) "
+modified = "*"
+staged = "+"
+untracked = "?"
+deleted = "x"
+stashed = "≡"
+ahead = "⇡"
+behind = "⇣"
+diverged = "⇕"
+
+[python]
+symbol = ""
+style = "grey"
+format = '[(\($virtualenv\) )]($style)'
+
+[cmd_duration]
+min_time = 2000
+style = "yellow"
+format = "[$duration]($style) "
+
+[character]
+success_symbol = "[❯](green)"
+error_symbol = "[❯](red)"
+vimcmd_symbol = "[❮](green)"
+
+[palettes.gruvbox_material]
+fg = "#d4be98"
+grey = "#928374"
+red = "#ea6962"
+orange = "#e78a4e"
+yellow = "#d8a657"
+green = "#a9b665"
+aqua = "#89b482"
+blue = "#7daea3"
+purple = "#d3869b"
+
+# Alternate palette; switch with theme-switch or set palette = "catppuccin_mocha" above
+[palettes.catppuccin_mocha]
+# Catppuccin equivalents of the Gruvbox color names (used by theme-switch)
+fg = "#cdd6f4"
+grey = "#7f849c"
+orange = "#fab387"
+aqua = "#94e2d5"
+rosewater = "#f5e0dc"
+flamingo = "#f2cdcd"
+pink = "#f5c2e7"
+mauve = "#cba6f7"
+red = "#f38ba8"
+maroon = "#eba0ac"
+peach = "#fab387"
+yellow = "#f9e2af"
+green = "#a6e3a1"
+teal = "#94e2d5"
+sky = "#89dceb"
+sapphire = "#74c7ec"
+blue = "#89b4fa"
+lavender = "#b4befe"
+text = "#cdd6f4"
+subtext1 = "#bac2de"
+subtext0 = "#a6adc8"
+overlay2 = "#9399b2"
+overlay1 = "#7f849c"
+overlay0 = "#6c7086"
+surface2 = "#585b70"
+surface1 = "#45475a"
+surface0 = "#313244"
+base = "#1e1e2e"
+mantle = "#181825"
+crust = "#11111b"
+
+[palettes.tokyonight]
+fg = "#c0caf5"
+grey = "#565f89"
+red = "#f7768e"
+orange = "#ff9e64"
+yellow = "#e0af68"
+green = "#9ece6a"
+aqua = "#7dcfff"
+blue = "#7aa2f7"
+purple = "#bb9af7"
+
+[palettes.everforest]
+fg = "#d3c6aa"
+grey = "#859289"
+red = "#e67e80"
+orange = "#e69875"
+yellow = "#dbbc7f"
+green = "#a7c080"
+aqua = "#83c092"
+blue = "#7fbbb3"
+purple = "#d699b6"
+
+[palettes.carbonfox]
+fg = "#f2f4f8"
+grey = "#6e6f70"
+red = "#ee5396"
+orange = "#ff7eb6"
+yellow = "#ebcb8b"
+green = "#25be6a"
+aqua = "#33b1ff"
+blue = "#78a9ff"
+purple = "#be95ff"
+
+[palettes.osaka]
+fg = "#9eabac"
+grey = "#576d74"
+red = "#db302d"
+orange = "#c94c16"
+yellow = "#b28500"
+green = "#849900"
+aqua = "#29a298"
+blue = "#268bd3"
+purple = "#d23681"
+
+[palettes.material]
+fg = "#eeffff"
+grey = "#616161"
+red = "#f07178"
+orange = "#f78c6c"
+yellow = "#ffcb6b"
+green = "#c3e88d"
+aqua = "#89ddff"
+blue = "#82aaff"
+purple = "#c792ea"

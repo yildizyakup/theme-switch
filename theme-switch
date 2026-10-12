@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# Switch the whole desktop (Cinnamon, icons, Plank, kitty, Starship, VS Code) between themes.
+# Usage: theme-switch            -> pick a theme from a list
+#        theme-switch <theme>    -> apply that theme directly (e.g. gruvbox, catppuccin)
+set -euo pipefail
+
+THEMES_DIR="$HOME/.config/theme-switcher/themes"
+CURRENT_FILE="$HOME/.config/theme-switcher/current"
+
+pick_theme() {
+  local current rows=()
+  current=$(cat "$CURRENT_FILE" 2>/dev/null || true)
+  for dir in "$THEMES_DIR"/*/; do
+    local id; id=$(basename "$dir")
+    local name; name=$(. "$dir/theme.env"; echo "$NAME")
+    [[ "$id" == "$current" ]] && name="$name  (current)"
+    rows+=("$id" "$name")
+  done
+  zenity --list --title="Choose theme" --text="Pick a theme for the whole desktop:" \
+    --column="id" --column="Theme" --hide-column=1 --print-column=1 \
+    --width=380 --height=420 "${rows[@]}" 2>/dev/null
+}
+
+theme="${1:-$(pick_theme || true)}"
+[[ -z "$theme" ]] && exit 0
+dir="$THEMES_DIR/$theme"
+if [[ ! -f "$dir/theme.env" ]]; then
+  notify-send "Theme not found" "$theme" 2>/dev/null || echo "Theme not found: $theme" >&2
+  exit 1
+fi
+# shellcheck source=/dev/null
+. "$dir/theme.env"
+
+# Cinnamon: GTK apps, panel, window borders, icons
+gsettings set org.cinnamon.desktop.interface gtk-theme "$GTK_THEME"
+gsettings set org.gnome.desktop.interface gtk-theme "$GTK_THEME"
+gsettings set org.cinnamon.theme name "$GTK_THEME"
+gsettings set org.cinnamon.desktop.wm.preferences theme "$GTK_THEME"
+gsettings set org.cinnamon.desktop.interface icon-theme "$ICON_THEME"
+gsettings set org.gnome.desktop.interface icon-theme "$ICON_THEME"
+
+# GTK4 / libadwaita apps read the theme from ~/.config/gtk-4.0
+gtk4_src="$HOME/.themes/$GTK_THEME/gtk-4.0"
+if [[ -d "$gtk4_src" ]]; then
+  mkdir -p "$HOME/.config/gtk-4.0"
+  for f in assets gtk.css gtk-dark.css; do
+    ln -sfn "$gtk4_src/$f" "$HOME/.config/gtk-4.0/$f"
+  done
+fi
+
+# Plank dock
+gsettings set net.launchpad.plank.dock.settings:/net/launchpad/plank/docks/dock1/ theme "$PLANK_THEME"
+
+# kitty: dark-theme.auto.conf wins when the system is dark, so update both files
+cp "$dir/kitty.conf" "$HOME/.config/kitty/current-theme.conf"
+cp "$dir/kitty.conf" "$HOME/.config/kitty/dark-theme.auto.conf"
+pkill -USR1 -x kitty 2>/dev/null || true
+
+# Starship: palettes share color names, so only the active palette changes
+sed -i -E "s/^palette = \".*\"/palette = \"$STARSHIP_PALETTE\"/" "$HOME/.config/starship.toml"
+
+# VS Code picks up settings.json changes live
+vscode_settings="$HOME/.config/Code/User/settings.json"
+if [[ -f "$vscode_settings" ]]; then
+  python3 -I - "$vscode_settings" "$VSCODE_THEME" <<'PY'
+import json, sys
+path, theme = sys.argv[1], sys.argv[2]
+with open(path) as f:
+    data = json.load(f)
+data["workbench.colorTheme"] = theme
+with open(path, "w") as f:
+    json.dump(data, f, indent=4, ensure_ascii=False)
+    f.write("\n")
+PY
+fi
+
+# cava: replace the [color] section, then ask running instances to reload colors
+cava_config="$HOME/.config/cava/config"
+if [[ -f "$dir/cava.ini" && -f "$cava_config" ]]; then
+  python3 -I - "$cava_config" "$dir/cava.ini" <<'PY'
+import re, sys
+config_path, colors_path = sys.argv[1], sys.argv[2]
+config = open(config_path).read()
+colors = open(colors_path).read().rstrip("\n") + "\n\n"
+pattern = re.compile(r"^\[color\]\n.*?(?=^\[|\Z)", re.S | re.M)
+config = pattern.sub(lambda _: colors, config, count=1) if pattern.search(config) else colors + config
+open(config_path, "w").write(config)
+PY
+  pkill -USR2 -x cava 2>/dev/null || true
+fi
+
+echo "$theme" > "$CURRENT_FILE"
+notify-send -i preferences-desktop-theme "Theme changed" "$NAME" 2>/dev/null || true
