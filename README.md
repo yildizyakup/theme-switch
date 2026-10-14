@@ -1,6 +1,6 @@
 # theme-switch
 
-Switch your whole Linux Mint Cinnamon desktop between color themes with one command or one shortcut: the GTK and window theme, the panel, icons, the Plank dock, kitty, the Starship prompt, VS Code and cava all change together.
+Switch your whole Linux Mint Cinnamon desktop between color themes with one command or one shortcut: the GTK and window theme, the panels (window-list thumbnails included), icons, kitty, the Starship prompt, VS Code and cava all change together.
 
 ```bash
 theme-switch              # pick a theme from a list
@@ -11,10 +11,9 @@ theme-switch gruvbox      # apply one directly
 
 | Part | How |
 |---|---|
-| GTK apps, Cinnamon panel, window borders | `gsettings` (Cinnamon + GNOME keys) |
+| GTK apps, Cinnamon panels and window-list thumbnails, window borders | `gsettings` (Cinnamon + GNOME keys) |
 | GTK4 / libadwaita apps | links the theme's `gtk-4.0` files into `~/.config/gtk-4.0` |
 | Icons | `gsettings` icon theme |
-| Plank dock | `gsettings` dock theme |
 | kitty | rewrites `current-theme.conf` and `dark-theme.auto.conf`, reloads running windows (`SIGUSR1`) |
 | Starship | switches `palette = …` in `starship.toml` (all palettes share color names) |
 | VS Code | sets `workbench.colorTheme` in `settings.json`, applied live |
@@ -43,7 +42,7 @@ cd theme-switch
 ./install.sh
 ```
 
-`install.sh` symlinks the script into `~/.local/bin`, the themes into `~/.config/theme-switcher/themes` and the Plank dock themes into `~/.local/share/plank/themes`, so `git pull` updates everything in place. Existing files and folders are moved to `~/.local/state/theme-switch/` first, not overwritten. If you don't have a `~/.config/starship.toml` yet, it installs the included one; otherwise copy its `[palettes.*]` sections into yours.
+`install.sh` symlinks the script into `~/.local/bin`, and the themes into `~/.config/theme-switcher/themes`, so `git pull` updates everything in place. Existing files and folders are moved to `~/.local/state/theme-switch/` first, not overwritten. If you don't have a `~/.config/starship.toml` yet, it installs the included one; otherwise copy its `[palettes.*]` sections into yours.
 
 **Keyboard shortcut:** System Settings → Keyboard → Shortcuts → Custom Shortcuts → *Add*, command `theme-switch`, for example on <kbd>Super</kbd>+<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Space</kbd>.
 
@@ -51,11 +50,11 @@ cd theme-switch
 
 Create `themes/<id>/` with:
 
-- `theme.env` — `NAME`, `GTK_THEME`, `ICON_THEME`, `PLANK_THEME`, `VSCODE_THEME`, `STARSHIP_PALETTE`
+- `theme.env` — `NAME`, `GTK_THEME`, `ICON_THEME`, `VSCODE_THEME`, `STARSHIP_PALETTE`
 - `kitty.conf` — kitty colors
 - `cava.ini` — optional, a `[color]` section for cava
 
-Add a `[palettes.<STARSHIP_PALETTE>]` section to `starship.toml` using the same color names as the others (`fg`, `grey`, `red`, `orange`, `yellow`, `green`, `aqua`, `blue`, `purple`), and a Plank theme under `plank/` if you want a matching dock.
+Add a `[palettes.<STARSHIP_PALETTE>]` section to `starship.toml` using the same color names as the others (`fg`, `grey`, `red`, `orange`, `yellow`, `green`, `aqua`, `blue`, `purple`).
 
 ## License
 

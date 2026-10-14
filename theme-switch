@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Switch the whole desktop (Cinnamon, icons, Plank, kitty, Starship, VS Code) between themes.
+# Switch the whole desktop (Cinnamon, icons, kitty, Starship, VS Code) between themes.
 # Usage: theme-switch            -> pick a theme from a list
 #        theme-switch <theme>    -> apply that theme directly (e.g. gruvbox, catppuccin)
 set -euo pipefail
@@ -31,7 +31,7 @@ fi
 # shellcheck source=/dev/null
 . "$dir/theme.env"
 
-# Cinnamon: GTK apps, panel, window borders, icons
+# Cinnamon: GTK apps, panels (incl. window-list thumbnails), window borders, icons
 gsettings set org.cinnamon.desktop.interface gtk-theme "$GTK_THEME"
 gsettings set org.gnome.desktop.interface gtk-theme "$GTK_THEME"
 gsettings set org.cinnamon.theme name "$GTK_THEME"
@@ -47,9 +47,6 @@ if [[ -d "$gtk4_src" ]]; then
     ln -sfn "$gtk4_src/$f" "$HOME/.config/gtk-4.0/$f"
   done
 fi
-
-# Plank dock
-gsettings set net.launchpad.plank.dock.settings:/net/launchpad/plank/docks/dock1/ theme "$PLANK_THEME"
 
 # kitty: dark-theme.auto.conf wins when the system is dark, so update both files
 cp "$dir/kitty.conf" "$HOME/.config/kitty/current-theme.conf"

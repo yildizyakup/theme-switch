@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Link theme-switch, its themes and the Plank dock themes into place for the current user.
+# Link theme-switch and its themes into place for the current user.
 # Re-running is safe; existing files/folders that aren't links yet are backed up first.
 set -euo pipefail
 
 HERE=$(cd "$(dirname "$0")" && pwd)
-# Backups go to one place, not next to the originals (Plank would list them as themes)
+# Backups go to one place, not next to the originals
 BACKUP=$HOME/.local/state/theme-switch/backup-$(date +%Y%m%d-%H%M%S)
 
 link() {  # link <target> <link-path>: move a real file/dir into $BACKUP, then symlink
@@ -29,9 +29,6 @@ fi
 
 link "$HERE/theme-switch" "$HOME/.local/bin/theme-switch"
 link "$HERE/themes" "$HOME/.config/theme-switcher/themes"
-for dock in "$HERE"/plank/*/; do
-    link "${dock%/}" "$HOME/.local/share/plank/themes/$(basename "$dock")"
-done
 
 if [ ! -f "$HOME/.config/starship.toml" ]; then
     cp "$HERE/starship/starship.toml" "$HOME/.config/starship.toml"
